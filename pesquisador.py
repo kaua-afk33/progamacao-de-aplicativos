@@ -17,8 +17,13 @@ if nome in autorizados:
         autorizados.remove(nome)
         print(f"Pesquisador {nome} removido.")
         print(f"Lista atualizada: {autorizados}")
-    else:
-        print("Operação cancelada. A lista permanece a mesma.")
+ else:
+    print("Operação cancelada. A lista permanece a mesma.")
+
+    cadastro = input(f"digite {nome} nao foi encontrado")
+    if cadastro == "sim":
+        autorizados.append(nome)
+        print(f"pesquisador foi encontrado {autorizados}")
 
 
 
