@@ -9,5 +9,5 @@ def avaliar_desempenho(nota):
     else:
         return "Insuficiente"
 nota_usuario = float(input("Digite a nota do aluno 0 a 10 "))
-menssagem = avaliar_nota(nota)
+menssagem = avaliar_desempenho(nota_usuario)
 print(menssagem)
