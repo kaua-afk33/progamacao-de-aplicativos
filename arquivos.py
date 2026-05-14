@@ -1,45 +1,53 @@
-def listar_destino():
-    with open('viagem.txt', 'r') as n:
-        destinos = n.readlines()
+def criar():
+    destino = input("Para onde deseja viajar: ")
+    with open('viagens.txt', 'a') as f:
+        f.write(destino + '\n')
+    print("Local cadastrado!")
 
+
+def ler():
+    with open('viagens.txt', 'r') as f:
+        viagens = f.readlines()
+        
         i = 0
-        for destino in destinos:
-            print(f"{i}" - {destinos.strip()})
-            i += 1
+        for viagem in viagens:
+            print(f"{i} - {viagem.strip()}") 
+            i += 1  
 
-def editar_destino():
-    ler()
-    idx = int(input("Digite o id do lugar que deseja atualizar: "))
-    novo_destino = input("Novo Destino: ")
-
-    with open('viagem.txt', 'r') as n:
-        linhas = n.readlines()
-
-    linhas[idx] = novo_destino + '/n'
-
-    with open('viagem.txt', 'w') as n:
+def atualizar():
+    ler() 
+    idx = int(input("Digite o ID do local que você deseja alterar: "))
+    novo_local = input("Novo local: ")
+    
+    with open('viagens.txt', 'r') as f:
+        linhas = f.readlines()
+    
+    linhas[idx] = novo_local + '\n' 
+    
+    with open('viagens.txt', 'w') as f: 
         f.writelines(linhas)
-    print("Destino adicionado!")
+    print("Local atualizado!")
 
-def deletar_destino():
+
+def deletar():
     ler()
-    idx = int(input("Digite o id do lugar que deseja deletar: "))
-
-    with open('viagem.txt', 'r') as n:
-        linhas = n.readlines()
+    idx = int(input("Digite o ID do destino que deseja excluir: "))
+    
+    with open('viagens.txt', 'r') as f:
+        linhas = f.readlines()
+    
     del linhas[idx]
-    with open('viagem.txt', "w") as n:
+    with open('viagens.txt', 'w') as f:
         f.writelines(linhas)
-    print("Destino removido!")
+    print("Local removido!")
+
 
 while True:
-    print("\n1-Adicionar destino  | 2-Listar sugestões | 3-Editar sugestão| 4-Deletar sugestão| 5-Sair")
-    opcao = int(input("escolha uma opção: "))
-
-    if opcao == '1': adicionar()
-    elif opcao == '2': listar()
-    elif opcao == '3': editar()
+    print("\n 1 cadastrar / 2 listar / 3 editar / 4 excluir / 5 sair")
+    opcao = input("Escolha: ")
+    
+    if opcao == '1': criar()
+    elif opcao == '2': ler()
+    elif opcao == '3': atualizar()
     elif opcao == '4': deletar()
-    elif opcao == '5': 
-        print("programa encerrado!")
-        break 
+    elif opcao == '5': break
