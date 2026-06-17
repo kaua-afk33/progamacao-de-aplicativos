@@ -1,3 +1,4 @@
+
 import sqlite3
 
 conexao = sqlite3.connect('escola_demonstraçao.db')
@@ -48,8 +49,6 @@ def atualizar_alunos():
         nova_turma = input("digite a nova turma")
         novo_cpf = input("digite o novo cpf")
 
-
-
-conexao.close()
-
+def deletar_professor():
+    
 
