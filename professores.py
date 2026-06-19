@@ -13,7 +13,8 @@ cursor.execute('''
         cpf TEXT UNIQUE NOT NULL,
         materia TEXT NOT NULL,
         escola TEXT NOT NULL,
-        salario TEXT NOT NULL   
+        salario real,
+        endereco TEXT
     )''')
 conexao.commit()
 
@@ -27,12 +28,12 @@ def registrar_professor():
     turma = input("Digite a sua turma: ")
     salario = input("Digite o seu salário: ")
     escola = input("Digite a escola que você trabalha: ")
-
-  
+    endereco = input("digite o seu endereco: ")
+    
     cursor.execute('''
-        INSERT INTO professores (nome, telefone, turma, idade, cpf, materia, escola, salario) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (nome, telefone, turma, idade, cpf, materia, escola, salario))
+        INSERT INTO professores (nome, telefone, turma, idade, cpf, materia, escola, salario, endereco) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (nome, telefone, turma, idade, cpf, materia, escola, salario, endereco))
     
     conexao.commit()
     print("Professor cadastrado com sucesso!")
@@ -68,16 +69,14 @@ def atualizar_professores():
         nova_materia = input("Digite a nova matéria: ")
         nova_escola = input("Digite a nova escola: ")
         novo_salario = input("Digite o novo salário: ")
-
         cursor.execute('''
             UPDATE professores 
-            SET nome = ?, telefone = ?, turma = ?, idade = ?, cpf = ?, materia = ?, escola = ?, salario = ?
+            SET nome = ?, telefone = ?, turma = ?, idade = ?, cpf = ?, materia = ?, escola = ?, salario = ? 
             WHERE id = ?
         ''', (novo_nome, novo_telefone, nova_turma, nova_idade, novo_cpf, nova_materia, nova_escola, novo_salario, idx))
         
         conexao.commit()
         print("Professor atualizado com sucesso!")
-
 def deletar_professor():
     ver_professores()
     print("\n--- Excluir Professor ---")
@@ -88,7 +87,7 @@ def deletar_professor():
     print("Professor excluído com sucesso!")
 
 while True:
-    print("\n--------MENU-------")
+    print("\n--------MENU--------")
     print("1: Criar Professor")
     print("2: Listar Professores")
     print("3: Atualizar Professor")
@@ -112,3 +111,9 @@ while True:
 
     else:
         print("Opção inválida.")
+    
+menu()
+
+
+cursor.execute('''ALTER TABLE professores ADD COLUMN endereco''')
+conexao.commit()

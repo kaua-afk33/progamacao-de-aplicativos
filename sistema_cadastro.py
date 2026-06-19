@@ -1,54 +1,109 @@
-
 import sqlite3
-
-conexao = sqlite3.connect('escola_demonstraçao.db')
+conexao = sqlite3.connect('escola_demostracao.db')
 cursor = conexao.cursor()
 
-cursor.execute(''' 
-    CREATE TABLE IF NOT EXISTS alunos(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXY NOT  NULL,
-        telefone TEXT,
-        turma TEXT,
-        idade INTEGER,
-        cpf TEXT UNIQUE NOT NULL
-    )
-''')
-def registrar_aluno():
+cursor.execute ('''CREATE TABLE IF NOT EXISTS alunos (
+        id_aluno INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome_aluno TEXT NOT NULL,
+        telefone_aluno TEXT NOT NULL,
+        turma_aluno TEXT,
+        idade_aluno INTEGER NOT NULL,
+        cpf_aluno TEXT NOT NULL,
+        id_professor_responsavel INTEGER NOT NULL,
+        
+        FOREIGN KEY (id_professor_responsavel) REFERENCES professores (id_professor)
+    )''')
 
-    nome_aluno =input("digite seu nome: ")
-    telefone_aluno =input("digite seu telefone: ")
-    idade_aluno =int(input("digite sua idade: "))
-    turma_aluno =input("digite sua turma: ")
-    cpf_aluno =input("digite seu cpf: ")
 
-    cursor.execute('''
-        INSERT INTO alunos (nome, telefone, turma, idade, cpf) VALUES (?, ?, ?, ?, ?)
-    ''', (nome_aluno, telefone_aluno, turma_aluno, idade_aluno, cpf_aluno))
+def registrar_alunos():  
+    print("\n ==== REGISTRAR ALUNO ====")
+
+    nome = input("qual o nome completo do aluno? (obrigatório): ")
+    telefone = input("qual o telefone do aluno? (obrigatório): ")
+    turma = input("qual a turma do aluno? (opcional): ")
+    idade = int(input("qual a idade do aluno? (obrigatório): "))
+    cpf = input("qual o CPF do aluno? (obrigatório): ")
+    id_prof = int(input("qual o ID do professor responsável? (obrigatório): "))
+
+    comando_inserir = f'''insert into alunos (nome_aluno, telefone_aluno, turma_aluno, idade_aluno, cpf_aluno, id_professor_responsavel)
+    values ('{nome}', '{telefone}', '{turma}', {idade}, '{cpf}', {id_prof})'''
+
+    cursor.execute(comando_inserir)
     conexao.commit()
-    print("aluno cadastrado com sucesso")
 
-def ver_alunos():
-    print("\n--- ALUNOS CADASTRADOS ---")
+    print("aluno registrado com sucesso!")
+
+
+def ver_alunos():     
     cursor.execute("SELECT * FROM alunos")
-    for aluno in cursor.fetchall():
-        print(aluno)
+    dados = cursor.fetchall()
 
-def atualizar_alunos():
+    print("\n ==== ALUNOS REGISTRADOS ====")
+
+    for aluno in dados:
+        print(f"alunos: {aluno}")
+
+
+def atualizar_alunos():   
     ver_alunos()
-    print("\n ver alunos")
-    idx = input("qual id voce quer mudar")
+
+    print("\n ==== ATUALIZAR ALUNOS ====")
+    qual_mudar = int(input("qual ID do aluno que quer atualizar?: "))
+
     cursor.execute(
-        "SELECT * FROM alunos WHERE id = ?", (idx,)
+        "SELECT * FROM alunos WHERE id_aluno = ?", (qual_mudar,)
     )
+
     aluno = cursor.fetchone()
+
     if aluno:
-        novo_nome = input("qual e o novo nome")
-        novo_telefone = input("digite o novo numero de telefone")
-        nova_idade = int(input("digite a sua nova idade"))
-        nova_turma = input("digite a nova turma")
-        novo_cpf = input("digite o novo cpf")
+        novo_nome = input("qual o novo nome do aluno?: ")
+        novo_cpf = input("qual é o novo CPF do aluno?: ")
+        nova_idade = int(input("qual a nova idade?: "))
+        novo_telefone = input("qual o novo telefone?: ")
+        nova_turma = input("qual a nova turma do aluno?: ")
 
-def deletar_professor():
+        cursor.execute(
+            "UPDATE alunos SET nome_aluno = ?, cpf_aluno = ?, telefone_aluno = ?, turma_aluno = ?, idade_aluno = ? WHERE id_aluno = ?",
+              (novo_nome, novo_cpf, novo_telefone, nova_turma, nova_idade, qual_mudar)
+        )
+
+        conexao.commit()
+
+        print("Aluno atualizado com sucesso!")
     
+    else:
+        print("Aluno não encontrado.")
 
+
+def deletar_aluno():      
+    print("\n ==== DELETAR ALUNO ====")
+    ver_alunos()
+
+    qual_deletar = int(input("qual ID do aluno que deseja deletar?: "))
+
+    cursor.execute(
+            "DELETE FROM alunos WHERE id_aluno = ?", (qual_deletar,)
+    )
+    conexao.commit()
+
+    print("aluno removido com sucesso!")
+    
+op = 0
+while op != 5:
+    print("\n ==== MENU DE INTERAÇÃO ====")
+    print("1 - adicionar alunos / 2 - ver alunos / 3 - atualizar alunos / 4 - deletar aluno | 5 - sair")
+    op = int(input("qual opção vai escolher?: "))
+
+    if op == 1: registrar_alunos()
+    elif op == 2: ver_alunos()
+    elif op == 3: atualizar_alunos()
+    elif op == 4: deletar_aluno()
+    elif op == 5:
+        print("-" * 30)
+        print("encerrando programa...")
+        
+    else:
+        print("opção invalida.")
+
+conexao.close()
