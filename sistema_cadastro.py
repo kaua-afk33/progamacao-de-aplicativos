@@ -10,7 +10,8 @@ cursor.execute ('''CREATE TABLE IF NOT EXISTS alunos (
         idade_aluno INTEGER NOT NULL,
         cpf_aluno TEXT NOT NULL,
         id_professor_responsavel INTEGER NOT NULL,
-        
+        endereco TEXT,
+
         FOREIGN KEY (id_professor_responsavel) REFERENCES professores (id_professor)
     )''')
 
@@ -24,9 +25,10 @@ def registrar_alunos():
     idade = int(input("qual a idade do aluno? (obrigatório): "))
     cpf = input("qual o CPF do aluno? (obrigatório): ")
     id_prof = int(input("qual o ID do professor responsável? (obrigatório): "))
+    endereco = input("digite o seu endereco")
 
-    comando_inserir = f'''insert into alunos (nome_aluno, telefone_aluno, turma_aluno, idade_aluno, cpf_aluno, id_professor_responsavel)
-    values ('{nome}', '{telefone}', '{turma}', {idade}, '{cpf}', {id_prof})'''
+    comando_inserir = f'''insert into alunos (nome_aluno, telefone_aluno, turma_aluno, idade_aluno, cpf_aluno, id_professor_responsavel, professor_endereco)
+    values ('{nome}', '{telefone}', '{turma}', {idade}, '{cpf}', {id_prof}, '{endereco}')'''
 
     cursor.execute(comando_inserir)
     conexao.commit()
@@ -62,10 +64,10 @@ def atualizar_alunos():
         nova_idade = int(input("qual a nova idade?: "))
         novo_telefone = input("qual o novo telefone?: ")
         nova_turma = input("qual a nova turma do aluno?: ")
-
+        novo_endereco = input("digite o seu novo endereco?: ")
         cursor.execute(
-            "UPDATE alunos SET nome_aluno = ?, cpf_aluno = ?, telefone_aluno = ?, turma_aluno = ?, idade_aluno = ? WHERE id_aluno = ?",
-              (novo_nome, novo_cpf, novo_telefone, nova_turma, nova_idade, qual_mudar)
+            "UPDATE alunos SET nome_aluno = ?, cpf_aluno = ?, telefone_aluno = ?, turma_aluno = ?, idade_aluno = ? WHERE id_aluno = ?", "professor_endereco = ?",
+              (novo_nome, novo_cpf, novo_telefone, nova_turma, nova_idade, qual_mudar, novo_endereco)
         )
 
         conexao.commit()

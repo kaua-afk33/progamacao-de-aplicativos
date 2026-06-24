@@ -1,7 +1,11 @@
 import sqlite3
 
-conexao = sqlite3.connect('escola_demonstraçao.db')
-cursor = conexao.cursor()
+try:
+    conexao = sqlite3.connect('escola_demonstraçao.db')
+    cursor = conexao.cursor()
+except ValueError:
+    print("erro de conexao")
+
 
 cursor.execute(''' 
     CREATE TABLE IF NOT EXISTS professores(
@@ -16,8 +20,7 @@ cursor.execute('''
     )
 ''')
 
-def registrar_professor():
-
+def registrar_professor(): 
     nome_professor =input("digite seu nome: ")
     telefone_professor =input("digite seu telefone: ")
     idade_professor =int(input("digite sua idade: "))
@@ -25,12 +28,13 @@ def registrar_professor():
     cpf_professor =input("digite seu cpf: ")
     salario_professor =float(input("digite seu salario: "))
     nome_da_escola = input("digite o nome da escola: ")
-
     cursor.execute('''
         INSERT INTO professor (nome, telefone, materia, idade, cpf, salario, nome_da_escola) VALUES (?, ?, ?, ?, ?)
     ''', (nome_professor, telefone_professor, materia_professor, idade_professor, cpf_professor, salario_professor, nome_da_escola))
     conexao.commit()
     print("professor cadastrado com sucesso")
+        print("digite apenas numeros")
+
 
 def ver_professores():
     print("\n--- PROFESSORES CADASTRADOS ---")
@@ -38,8 +42,10 @@ def ver_professores():
     for professor in cursor.fetchall():
         print(professor)
 
+
 def atualizar_professores():
     ver_professores()
+
     print("\n--- ATUALIZAR PROFESSORES ---")
 
     idx = int(input("qual id deseja atualizar?"))
@@ -61,6 +67,5 @@ def atualizar_professores():
 
     cursor.execute("UPDATE professores SET nome_completo = ?, telefone = ?, materia = ?, idade = ?, cpf = ?, salario = ?, nome_da_escola = ?",
     (nome_professor, telefone_professor, materia_professor, idade_professor, cpf_professor, salario_professor, nome_da_escola))
-
     conexao.commit()
     print("--- PROFESSOR ATUALIZADO COM SUCESSO ---")
