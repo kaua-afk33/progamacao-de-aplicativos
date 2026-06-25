@@ -1,111 +1,155 @@
 import sqlite3
-conexao = sqlite3.connect('escola_demostracao.db')
+conexao = sqlite3.connect('escola.demonstracao.db')
 cursor = conexao.cursor()
 
-cursor.execute ('''CREATE TABLE IF NOT EXISTS alunos (
-        id_aluno INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome_aluno TEXT NOT NULL,
-        telefone_aluno TEXT NOT NULL,
-        turma_aluno TEXT,
-        idade_aluno INTEGER NOT NULL,
-        cpf_aluno TEXT NOT NULL,
-        id_professor_responsavel INTEGER NOT NULL,
-        endereco TEXT,
+def cadastrar_aluno():
+    nome_completo_aluno = input("Digite o nome completo: ")
+    telefone_aluno = input("Digite o telefone: ")
+    turma_aluno = input("Digite a Turma: ")
+    
+    try:
+        idade_aluno = int(input("Digite a idade: "))
+    except ValueError:
+        print("Erro: A idade deve ser um número inteiro. Cadastro cancelado.\n")
+        return
 
-        FOREIGN KEY (id_professor_responsavel) REFERENCES professores (id_professor)
-    )''')
+    cpf_aluno = input("Digite o cpf: ")
+    endereco_aluno = input("Digite o endereço (Rua, Nº): ")
+    cidade_aluno = input("Digite a cidade: ")
+    estado_aluno = input("Digite o estado (Ex: PR, SC): ")
+    
+    try:
+        professor_id = int(input("Digite o ID do professor: "))
+    except ValueError:
+        print("Erro: O ID do professor deve ser um número inteiro. Cadastro cancelado.\n")
+        return
 
-
-def registrar_alunos():  
-    print("\n ==== REGISTRAR ALUNO ====")
-
-    nome = input("qual o nome completo do aluno? (obrigatório): ")
-    telefone = input("qual o telefone do aluno? (obrigatório): ")
-    turma = input("qual a turma do aluno? (opcional): ")
-    idade = int(input("qual a idade do aluno? (obrigatório): "))
-    cpf = input("qual o CPF do aluno? (obrigatório): ")
-    id_prof = int(input("qual o ID do professor responsável? (obrigatório): "))
-    endereco = input("digite o seu endereco")
-
-    comando_inserir = f'''insert into alunos (nome_aluno, telefone_aluno, turma_aluno, idade_aluno, cpf_aluno, id_professor_responsavel, professor_endereco)
-    values ('{nome}', '{telefone}', '{turma}', {idade}, '{cpf}', {id_prof}, '{endereco}')'''
+    cursor.execute('''
+                CREATE TABLE IF NOT EXISTS alunos(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                telefone TEXT, 
+                turma TEXT, 
+                idade INTEGER,
+                cpf TEXT UNIQUE NOT NULL,
+                endereco TEXT,
+                cidade TEXT,
+                estado TEXT,
+                professor_id INTEGER,
+                FOREIGN KEY (professor_id) REFERENCES professores(id))''')
+    
+    comando_inserir = f'''
+        INSERT INTO alunos(nome, telefone, turma, idade, cpf, endereco, cidade, estado, professor_id)
+        VALUES('{nome_completo_aluno}', '{telefone_aluno}', '{turma_aluno}', {idade_aluno}, '{cpf_aluno}', '{endereco_aluno}', '{cidade_aluno}', '{estado_aluno}', {professor_id})'''
 
     cursor.execute(comando_inserir)
     conexao.commit()
+    print("Aluno cadastrado com sucesso!\n")
 
-    print("aluno registrado com sucesso!")
-
-
-def ver_alunos():     
+def listar():
+    conexao.commit()
     cursor.execute("SELECT * FROM alunos")
-    dados = cursor.fetchall()
+    alunos = cursor.fetchall()
+    for aluno in alunos:
+        print(f"{aluno[0]}, nome: {aluno[1]}, telefone: {aluno[2]}, turma: {aluno[3]}, idade: {aluno[4]}, CPF: {aluno[5]}, endereço: {aluno[6]}, cidade: {aluno[7]}, estado: {aluno[8]}, professor: {aluno[9]}")
+    print("\n")
 
-    print("\n ==== ALUNOS REGISTRADOS ====")
+def buscar():
+    try:
+        id_aluno = int(input("Digite o id do aluno: "))
+    except ValueError:
+        print("Erro: O ID deve ser um número inteiro.\n")
+        return
 
-    for aluno in dados:
-        print(f"alunos: {aluno}")
-
-
-def atualizar_alunos():   
-    ver_alunos()
-
-    print("\n ==== ATUALIZAR ALUNOS ====")
-    qual_mudar = int(input("qual ID do aluno que quer atualizar?: "))
-
-    cursor.execute(
-        "SELECT * FROM alunos WHERE id_aluno = ?", (qual_mudar,)
-    )
+    cursor.execute(f"SELECT * FROM alunos WHERE id = {id_aluno}")
 
     aluno = cursor.fetchone()
-
     if aluno:
-        novo_nome = input("qual o novo nome do aluno?: ")
-        novo_cpf = input("qual é o novo CPF do aluno?: ")
-        nova_idade = int(input("qual a nova idade?: "))
-        novo_telefone = input("qual o novo telefone?: ")
-        nova_turma = input("qual a nova turma do aluno?: ")
-        novo_endereco = input("digite o seu novo endereco?: ")
-        cursor.execute(
-            "UPDATE alunos SET nome_aluno = ?, cpf_aluno = ?, telefone_aluno = ?, turma_aluno = ?, idade_aluno = ? WHERE id_aluno = ?", "professor_endereco = ?",
-              (novo_nome, novo_cpf, novo_telefone, nova_turma, nova_idade, qual_mudar, novo_endereco)
-        )
-
-        conexao.commit()
-
-        print("Aluno atualizado com sucesso!")
-    
+        print("Aluno encontrado ")
+        print(aluno)
     else:
-        print("Aluno não encontrado.")
+        print("Aluno não encontrado")
+    print("\n")
 
+def atualizar():
+    try:
+        id_aluno = int(input("Digite o id do aluno: "))
+    except ValueError:
+        print("Erro: O ID deve ser um número inteiro.\n")
+        return
 
-def deletar_aluno():      
-    print("\n ==== DELETAR ALUNO ====")
-    ver_alunos()
+    novo_nome = input("Digite o novo nome: ")
+    novo_telefone = input("Digite o novo telefone: ")
+    nova_turma = input("Digite a nova turma: ")
+    
+    try:
+        nova_idade = int(input("Digite a nova idade: "))
+    except ValueError:
+        print("Erro: A idade deve ser um número inteiro. Atualização cancelada.\n")
+        return
 
-    qual_deletar = int(input("qual ID do aluno que deseja deletar?: "))
+    novo_cpf = input("Digite o novo CPF: ")
+    novo_endereco = input("Digite o novo endereço: ")
+    nova_cidade = input("Digite a nova cidade: ")
+    novo_estado = input("Digite o novo estado (Ex: PR, SC): ")
+    
+    try:
+        novo_professor = int(input("Digite o ID do novo professor: "))
+    except ValueError:
+        print("Erro: O ID do professor deve ser um número inteiro. Atualização cancelada.\n")
+        return
 
-    cursor.execute(
-            "DELETE FROM alunos WHERE id_aluno = ?", (qual_deletar,)
-    )
+    cursor.execute(f'''
+                    UPDATE alunos
+                    SET nome = '{novo_nome}', 
+                        telefone = '{novo_telefone}', 
+                        turma = '{nova_turma}', 
+                        idade = {nova_idade}, 
+                        cpf = '{novo_cpf}', 
+                        endereco = '{novo_endereco}', 
+                        cidade = '{nova_cidade}', 
+                        estado = '{novo_estado}', 
+                        professor_id = {novo_professor} 
+                    WHERE id = {id_aluno}''')
     conexao.commit()
+    print("Dados atualizados com sucesso!\n")
 
-    print("aluno removido com sucesso!")
-    
-op = 0
-while op != 5:
-    print("\n ==== MENU DE INTERAÇÃO ====")
-    print("1 - adicionar alunos / 2 - ver alunos / 3 - atualizar alunos / 4 - deletar aluno | 5 - sair")
-    op = int(input("qual opção vai escolher?: "))
 
-    if op == 1: registrar_alunos()
-    elif op == 2: ver_alunos()
-    elif op == 3: atualizar_alunos()
-    elif op == 4: deletar_aluno()
-    elif op == 5:
-        print("-" * 30)
-        print("encerrando programa...")
-        
+def remover():
+    try:
+        id_aluno = int(input("Digite o ID do aluno que deseja remover: "))
+    except ValueError:
+        print("Erro: O ID deve ser um número inteiro.\n")
+        return
+
+    cursor.execute(f"DELETE FROM alunos WHERE id = {id_aluno}")
+
+    conexao.commit()
+    if cursor.rowcount > 0 :
+        print("Aluno removido com sucesso.\n")
     else:
-        print("opção invalida.")
+        print("Nenhum aluno encontrado com esse ID.\n")
 
-conexao.close()
+opcao_while = 0
+while True:
+    print("1 - CADASTRAR ALUNO\n2 - LISTAR ALUNOS\n3 - BUSCAR ALUNO\n4 - ATUALIZAR DADOS\n5 - EXCLUIR CADASTRO\n6 - FECHAR PROGRAMA ")
+    
+    try:
+        opcao_while = int(input("Qual ação deseja realizar: "))
+    except ValueError:
+        print("Opção inválida! Digite apenas números de 1 a 6.\n")
+        continue
+
+    if opcao_while == 1:
+        cadastrar_aluno()
+    elif opcao_while == 2:
+        listar()
+    elif opcao_while == 3:
+        buscar()
+    elif opcao_while == 4:
+        atualizar()
+    elif opcao_while == 5:
+        remover()
+    elif opcao_while == 6:
+        conexao.close()
+        break

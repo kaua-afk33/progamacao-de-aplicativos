@@ -33,7 +33,6 @@ def registrar_professor():
     ''', (nome_professor, telefone_professor, materia_professor, idade_professor, cpf_professor, salario_professor, nome_da_escola))
     conexao.commit()
     print("professor cadastrado com sucesso")
-        print("digite apenas numeros")
 
 
 def ver_professores():
