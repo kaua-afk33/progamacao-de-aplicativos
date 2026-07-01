@@ -1,18 +1,22 @@
 import sqlite3
 
 def cadastrar_turma(nome, id_serie, id_prof):
-                                                      
-conexao = sqlite3.connect('sistema_escola.db')# 1. Abre a conexão e cria o cursor dentro da função
+    # Toda a lógica agora está corretamente alinhada dentro da função (4 espaços)
+    conexao = sqlite3.connect('sistema_escola.db')
     cursor = conexao.cursor()
     
-
-    cursor.execute("PRAGMA foreign_keys = ON;") # 2. Ativa o suporte a chaves estrangeiras (correção de 'foreing' para 'foreign')
+    # Ativa o suporte a chaves estrangeiras
+    cursor.execute("PRAGMA foreign_keys = ON;") 
     
-   
+    # Insere os dados na tabela
     cursor.execute(
-        "INSERT INTO turmas (nome_turma, id_serie, id_professor) VALUES (?, ?, ?)", # 3. Insere os dados na tabela
+        "INSERT INTO turmas (nome_turma, id_serie, id_professor) VALUES (?, ?, ?)", 
         (nome, id_serie, id_prof)
     )
     
-    conexao.commit()    # 4. Salva as alterações e fecha a conexão
+    # Salva as alterações e fecha a conexão
+    conexao.commit()    
     conexao.close()
+
+# Exemplo de como chamar a função:
+# cadastrar_turma("8º Ano A", 2, 5)
