@@ -1,7 +1,7 @@
 import sqlite3
 
 def criar_tabelas():
-    conexao = sqlite3.connect('sistema_escola.db')
+    conexao = sqlite3.connect('sistemas_escola.db')
     cursor = conexao.cursor()
 
     # 1. Criamos primeiro a tabela 'escolas' (independente)
