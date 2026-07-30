@@ -10,6 +10,7 @@ def buscar_professor(id_prof):
         )
     ''')
 
+
     conexao.commit()
     cursor.execute(
         "SELECT nome FROM professores WHERE id = ?",

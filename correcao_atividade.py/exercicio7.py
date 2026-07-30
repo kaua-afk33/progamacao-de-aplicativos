@@ -1,22 +1,44 @@
 import sqlite3
 
-def cadastrar_turma(nome, id_serie, id_prof):
-    # Toda a lógica agora está corretamente alinhada dentro da função (4 espaços)
+def criar_tabela_turmas():
     conexao = sqlite3.connect('sistema_escola.db')
     cursor = conexao.cursor()
-    
-    # Ativa o suporte a chaves estrangeiras
-    cursor.execute("PRAGMA foreign_keys = ON;") 
-    
-    # Insere os dados na tabela
-    cursor.execute(
-        "INSERT INTO turmas (nome_turma, id_serie, id_professor) VALUES (?, ?, ?)", 
-        (nome, id_serie, id_prof)
-    )
-    
-    # Salva as alterações e fecha a conexão
-    conexao.commit()    
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS turmas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            id_serie INTEGER,
+            id_prof INTEGER,
+            FOREIGN KEY (id_serie) REFERENCES series(id),
+            FOREIGN KEY (id_prof) REFERENCES professores(id)
+        )
+    ''')
+
+    conexao.commit()
     conexao.close()
 
-# Exemplo de como chamar a função:
-# cadastrar_turma("8º Ano A", 2, 5)
+def cadastrar_turma(nome, id_serie, id_prof):
+    conexao = sqlite3.connect('sistema_escola.db')
+    cursor = conexao.cursor()
+
+    try:
+        cursor.execute('''
+            INSERT INTO turmas (nome, id_serie, id_prof)
+            VALUES (?, ?, ?)
+        ''', (nome, id_serie, id_prof))
+
+
+        conexao.commit()
+        print("Turma cadastrada com sucesso!")
+
+
+    except sqlite3.IntegrityError:
+        print("Erro: professor ou série não existe.")
+
+    finally:
+        conexao.close()
+
+criar_tabela_turmas()
+
+cadastrar_turma("Turma b", 2, 2)

@@ -15,5 +15,4 @@ def conectar_e_consultar():
         
     conexao.close()
 
-if __name__ == "__main__":
     conectar_e_consultar()

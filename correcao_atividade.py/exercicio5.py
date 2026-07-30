@@ -17,7 +17,6 @@ def vincular_aluno():
         print("Erro: O ID da turma precisa ser um número inteiro.")
         
     except sqlite3.Error as erro:
-        # Trata os erros específicos do SQLite
         print(f"Erro no banco de dados: {erro}")
         
     finally:

@@ -1,3 +1,4 @@
+import sqlite3
 
 def inicializar_banco():
     conexao = sqlite3.connect('sistema_escola.db')
