@@ -1,17 +1,15 @@
-import sqlite3
+import sqlite3 
+ 
+def cadastrar_lista_alunos(): 
+    lista = [("Ana", 1), ("Carlos", 1), ("Beatriz", 2)] 
+     
+    conexao = sqlite3.connect('sistema_escola.db') 
+    cursor = conexao.cursor() 
+     
+    cursor.executemany("INSERT INTO alunos (nome, turma) VALUES (?, ?)", lista)
+     
+    conexao.commit() 
+    conexao.close() 
+cadastrar_lista_alunos()
 
-def cadastrar_lista_alunos():
-    lista = [("Ana", 1), ("Carlos", 1), ("Beatriz", 2)]
-
-    conexao = sqlite3.connect('sistema_escola.db')
-    cursor = conexao.cursor()
-
-    # Correção: Alterado de 'execute' para 'executemany'
-    cursor.executemany("INSERT INTO alunos (nome, id_turma) VALUES (?, ?)", lista)
-
-    conexao.commit()
-    conexao.close()
-    print("Todos os alunos foram cadastrados com sucesso!")
-
-# Para testar a função:
-# cadastrar_lista_alunos()
+# Uso do método cursor.execute() tentando passar uma lista com vários itens de uma só vez.

@@ -1,42 +1,21 @@
-
-import sqlite3
-
-def cadastrar_escola_manual():
-    # O aluno resolveu gerar o ID por conta própria
+import sqlite3 
+ 
+def cadastrar_escola_manual(): 
+    conexao = sqlite3.connect('sistema_escola.db') 
+    cursor = conexao.cursor()
     try:
-        id_escola = int(input("Digite o ID para a nova escola: "))
-    except ValueError:
-        print("Erro: O ID precisa ser um número inteiro!")
-        return
+        id_escola = int(input("Digite o ID para a nova escola: ")) 
+        nome = input("Nome da escola: ") 
 
-    nome = input("Nome da escola: ")
-
-    # Boa prática: Usar o 'with' garante que a conexão feche mesmo se ocorrer um erro
-    try:
-        conexao = sqlite3.connect('sistema_escola.db')
-        cursor = conexao.cursor()
-
-        # A blindagem protetora contra IDs duplicados acontece aqui:
-        cursor.execute(
-            "INSERT INTO escolas (id, nome) VALUES (?, ?)",
-            (id_escola, nome)
-        )
-
-        conexao.commit()
-        print(f"Escola '{nome}' cadastrada com sucesso!")
-
-    except sqlite3.IntegrityError:
-        # Captura especificamente o erro de ID duplicado (Primary Key violation)
-        print(f"Erro: Já existe uma escola cadastrada com o ID {id_escola}. Tente outro.")
-    
-    except sqlite3.Error as e:
-        # Captura qualquer outro erro genérico do banco de dados
-        print(f"Ocorreu um erro no banco de dados: {e}")
+        cursor.execute("INSERT INTO escolas (id, nome) VALUES (?, ?)", (id_escola, nome)) 
         
+        conexao.commit() 
+    except sqlite3.IntegrityError as e:
+        print("Erro no sistema, ", e)
+    
     finally:
-        # Garante que a conexão seja fechada independente de ter dado erro ou não
-        if conexao:
-            conexao.close()
+        conexao.close()
 
-# Para testar a função
-# cadastrar_escola_manual()
+cadastrar_escola_manual()
+
+# O programa permite que o usuário digite um ID manualmente sem verificar se ele já existe na tabela, gerando uma tela de erro bruta do sistema ao tentar inserir um ID repetido. 

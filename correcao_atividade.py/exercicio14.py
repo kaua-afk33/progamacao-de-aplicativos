@@ -1,13 +1,23 @@
-import sqlite3
+import sqlite3 
 
-def cadastrar_serie_seguro(nome, id_escola):
-    try:
-        conexao = sqlite3.connect('/pasta_protegida/sistema.db')
-        cursor = conexao.cursor()
-        cursor.execute("INSERT INTO series (nome_serie, id_escola) VALUE (?, ?)",
-(nome, id_escola))
-    conexao.commit()
-except sqlite3.Error as e:
-    print("erro tecnico:", e)
-finally:
-    conexao.close()
+def cadastrar_serie_seguro(nome, id_escola): 
+    conexao = None
+    try: 
+
+        conexao = sqlite3.connect('/pasta_protegida/sistema.db') 
+        cursor = conexao.cursor() 
+        cursor.execute("INSERT INTO series (nome_serie, id_escola) VALUES (?,?)", (nome, id_escola)) 
+        conexao.commit() 
+    except sqlite3.Error as e: 
+        print("Erro técnico:", e) 
+    finally: 
+        if conexao:
+            conexao.close() 
+
+
+nome = input("Digite o nome: ")
+id_escola = int(input("Digite o id da escola: "))
+
+cadastrar_serie_seguro(nome, id_escola)
+
+# sqlite3.connect() falhar logo na abertura, a variável conexao nem chega a ser criada Ao entrar no bloco finally e tentar executar conexao.close() o Python lança o erro UnboundLocalError.

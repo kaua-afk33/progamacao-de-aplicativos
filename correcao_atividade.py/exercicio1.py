@@ -6,22 +6,13 @@ def inicializar_banco():
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS escolas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL
+            id INTEGER PRIMARY KEY AUTOINCREMENT,               
+            nome TEXT NOT NULL                              
         )
     ''')
-
-    cursor.execute('''
-            CREATE TABLE IF NOT EXISTS series (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome_serie TEXT NOT NULL,
-                id_escola INTERGER,
-                FOREIGN KEY (id_escola) REFERENCES escolas (id)
-            )
-        ''')
-
+ 
     conexao.commit()
     conexao.close()
-    print("banco de dados iniciado com sucesso")
 
-inicializar_banco()
+
+ #Faltou salvar as alterações no banco com o comando conexao.commit().

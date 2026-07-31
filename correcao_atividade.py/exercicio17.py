@@ -1,30 +1,25 @@
-import sqlite3
+import sqlite3 
+ 
+def inserir_professor(nome, materia, cpf): 
+    try: 
+        conexao = sqlite3.connect('sistema_escola.db') 
+        cursor = conexao.cursor() 
+        cursor.execute("INSERT INTO professores (nome, materia, cpf) VALUES (?,?,?)", (nome, materia, cpf)) 
+        conexao.commit() 
+    
+    except sqlite3.IntegrityError: 
+        print("Erro: Este CPF já está cadastrado no sistema!") 
 
-def inserir_professor(nome, materia, cpf):
-    # Inicializamos a variável como None para o 'finally' não quebrar
-    conexao = None
-    try:
-        conexao = sqlite3.connect("sistema_escola.db")
-        cursor = conexao.cursor()
+    except sqlite3.Error:
+        print("Erro no codigo,")
 
-        cursor.execute(
-            "INSERT INTO professores (nome, materia, cpf) VALUES (?, ?, ?)",
-            (nome, materia, cpf)
-        )
 
-        conexao.commit()
-        print(f"Professor {nome} cadastrado com sucesso!")
+    finally: 
+        conexao.close() 
 
-    # Correção 1: Alinhamento (indentação) do except com o try
-    except sqlite3.Error as e:
-        # Exibe o erro real do banco para ajudar no diagnóstico
-        print(f"Erro no banco de dados: {e}")
+nome = input("Digite o nome do professor: ")
+materia = input("Digite a materia do professor: ")
+cpf = input("Digite o cpf do professor: ")
+inserir_professor(nome, materia, cpf)
 
-    # Correção 1: Alinhamento (indentação) do finally
-    finally:
-        # Correção 2: Só fecha a conexão se ela foi aberta com sucesso
-        if conexao:
-            conexao.close()
-
-# Exemplo de uso:
-# inserir_professor("Ana Costa", "Matemática", "111.222.333-44")
+# O código usou um bloco except Genérico que capturava qualquer erro do banco, exibindo uma mensagem de "CPF Duplicado" mesmo quando o erro era na verdade uma palavra digitada errada no comando SQL.

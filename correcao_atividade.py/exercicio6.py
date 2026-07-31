@@ -1,30 +1,14 @@
-import sqlite3
-
-def buscar_professor(id_prof):
-    conexao = sqlite3.connect('sistema_escola.db')
+import sqlite3 
+id_prof = int(input("Digite o id do professor: "))
+def buscar_professor(id_prof): 
+    conexao = sqlite3.connect('sistema_escola.db') 
     cursor = conexao.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS professores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL
-        )
-    ''')
 
+    cursor.execute(f"SELECT nome FROM professores WHERE id = {id_prof}") 
+    resultado = cursor.fetchone() 
+    print(resultado) 
+    conexao.close() 
 
-    conexao.commit()
-    cursor.execute(
-        "SELECT nome FROM professores WHERE id = ?",
-        (id_prof,)
-    )
+buscar_professor(id_prof)
 
-
-    resultado = cursor.fetchone()
-
-    if resultado:
-        print("Professor encontrado:", resultado[0])
-    else:
-        print("Professor não encontrado!")
-
-    conexao.close()
-
-buscar_professor(1)   
+# id_prof no Python cria apenas uma variável entre parênteses, e não uma tupla. O SQLite exige obrigatoriamente uma tupla para passar parâmetros.

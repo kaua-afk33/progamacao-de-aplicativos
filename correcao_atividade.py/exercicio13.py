@@ -1,12 +1,19 @@
-import sqlite3
+import sqlite3 
+ 
+def verificar_registros(): 
+    conexao = sqlite3.connect('sistema_escola.db') 
+    cursor = conexao.cursor() 
+     
+    cursor.execute("SELECT * FROM alunos") 
+     
+    print("Primeiro print:", cursor.fetchall()) 
 
-def verificar_registro():
-    conexao = sqlite3.connect('sistema_escola.db')
-    cursor = conexao.cursor()
 
-    cursor.execute("SELECT * FROM alunos")
+    cursor.execute("SELECT * FROM alunos") 
+    print("Segundo print:", cursor.fetchall()) 
+     
+    conexao.close() 
 
-print("primeiro print:", cursor.fetchall())
-print("segundo print:", cursor.fetchall())
+verificar_registros()
 
-conexao.close()
+# cursor.fetchall() funciona como um leitor que consome os dados.
