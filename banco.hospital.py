@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3 
 
 
 def criar_tabelas():
