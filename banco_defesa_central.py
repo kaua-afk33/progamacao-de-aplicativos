@@ -34,14 +34,13 @@ def inicializar_banco():
         return None
 
 def cadastrar_hotel(conexao):
-    """Função auxiliar para cadastrar um hotel (facilita os testes de chave estrangeira)."""
     try:
         cursor = conexao.cursor()
         print("\n--- Cadastro de Novo Hotel ---")
         nome = input("Digite o nome do hotel: ")
         cidade = input("Digite a cidade do hotel: ")
         
-        cursor.execute("INSERT INTO hoteis (nome, cidade) VALUES (?, ?);", (nome, cidade))
+        cursor.execute("INSERT INTO hoteis (nome, cidade) VALUES (?, ?)", (nome, cidade))
         conexao.commit()
         print(f" Hotel '{nome}' cadastrado com sucesso! ID gerado: {cursor.lastrowid}")
     except sqlite3.Error as e:
@@ -73,7 +72,6 @@ def cadastrar_quarto(conexao):
         print(" Dica: Verifique se o ID do hotel informado realmente existe na tabela de hotéis.")
 
 def listar_hoteis(conexao):
-    """Lista todos os hotéis cadastrados para auxiliar na visualização dos IDs."""
     try:
         cursor = conexao.cursor()
         cursor.execute("SELECT id, nome, cidade FROM hoteis;")
@@ -90,20 +88,19 @@ def listar_hoteis(conexao):
     except sqlite3.Error as e:
         print(f" Erro ao listar hotéis: {e}")
 
-def main():
+def menu():
     conexao = inicializar_banco()
     if not conexao:
         return
 
     try:
         while True:
-            print("\n🏨-------------MENU DO HOTEL-------------🏨")
+            print("\n-------------MENU DO HOTEL-------------")
             print("1. Cadastrar Hotel")
             print("2. Listar Hotéis")
             print("3. Cadastrar Quarto")
             print("4. Sair")
-            
-            opcao = input("Escolha uma opção: ").strip()
+            opcao = input("Escolha uma opção: ")
             
             if opcao == "1":
                 cadastrar_hotel(conexao)
@@ -120,4 +117,4 @@ def main():
         conexao.close()
 
 if __name__ == "__main__":
-    main()
+    menu()

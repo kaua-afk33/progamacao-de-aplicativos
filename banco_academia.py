@@ -3,26 +3,26 @@ import sqlite3
 conexao = sqlite3.connect("sistema_academias.db")
 cursor = conexao.cursor()
 
-cursor.execute(
-    """
+cursor.execute('''
+    
 CREATE TABLE IF NOT EXISTS academias (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome_unidade TEXT NOT NULL,
     bairro TEXT NOT NULL
-);
-"""
-)
+ )
+
+''')
 
 cursor.execute(
-    """
+    '''
 CREATE TABLE IF NOT EXISTS alunos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
     mensalidade REAL NOT NULL,
     id_academia INTEGER,
     FOREIGN KEY (id_academia) REFERENCES academias(id)
-);
-"""
+    )
+'''
 )
 
 conexao.commit()
@@ -58,7 +58,7 @@ print("--- Alunos Cadastrados com Sucesso ---")
 cursor.execute("SELECT id, nome, mensalidade, id_academia FROM alunos")
 for linha in cursor.fetchall():
     print(
-        f"ID: {linha[0]} | Nome: {linha[1]} | Mensalidade: R$ {linha[2]:.2f} | ID Academia: {linha[3]}"
+        f"ID: {linha[0]} | Nome: {linha[1]} | Mensalidade: R$ {linha[2]} | ID Academia: {linha[3]}"
     )
 
 conexao.close()
