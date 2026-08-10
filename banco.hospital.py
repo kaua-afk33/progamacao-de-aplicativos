@@ -69,7 +69,6 @@ def listar_hospitais():
 
     for h in hospitais:
       print(f"ID: {h[0]} | Nome: {h[1]} | Cidade: {h[2]}")
-    print("-" * 35)
     return True
   except sqlite3.Error as e:
     print(f"Erro ao listar hospitais: {e}")

@@ -1,7 +1,6 @@
 import sqlite3
 
 def inicializar_banco():
-    """Conecta ao banco de dados, ativa as chaves estrangeiras e cria as tabelas se não existirem."""
     try:
         conexao = sqlite3.connect("hotelaria.db")
         cursor = conexao.cursor()
