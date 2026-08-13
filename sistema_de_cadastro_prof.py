@@ -49,7 +49,7 @@ def atualizar_professores():
 
     idx = int(input("qual id deseja atualizar?"))
 
-    cursor.execute("SELECT * FROM professores WHERE id = ?", (idx))
+    cursor.execute("SELECT * FROM professores WHERE id = ?", (idx))         
 
     professor = cursor.fetchone()
 
