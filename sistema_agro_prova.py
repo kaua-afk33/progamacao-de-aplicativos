@@ -41,7 +41,7 @@ def cadastrar_cooperativa():
             (nome_cooperativa, registro_ocb),
         )
         conexao.commit()
-        print("\n Cooperativa cadastrada com sucesso!")
+        print("\nCooperativa cadastrada com sucesso!")
     except sqlite3.Error as e:
         print(f"Erro ao cadastrar cooperativa: {e}")
 
@@ -60,7 +60,7 @@ def cadastrar_silos():
             (localidade, capacidade, id_cooperativa),
         )
         conexao.commit()
-        print("\n Silo cadastrado com sucesso!")
+        print("\nSilo cadastrado com sucesso!")
     except sqlite3.IntegrityError:
         print("Erro: O ID da cooperativa mãe informado não existe no sistema.")
     except ValueError:
@@ -69,68 +69,55 @@ def cadastrar_silos():
 
 def listar_dados():
     print("\n" + "=" * 40)
-    print(" RELATÓRIO: COOPERATIVAS E SILOS ")
+    print(" RELATÓRIO GERAL: COOPERATIVAS E SILOS ")
     print("=" * 40)
 
-    cursor.execute("SELECT id, nome_cooperativa, registro_ocb FROM cooperativas_mae")
-    coops = cursor.fetchall()
-
-    if not coops:
-        print("Nenhuma cooperativa cadastrada.")
-        return
-
-    print("\n--- COOPERATIVAS ---")
-    for cooperativa in coops:
-        print(f"ID: {cooperativa[0]} | Nome: {cooperativa[1]} | OCB: {cooperativa[2]}")
-
     cursor.execute("""
-        SELECT silos_armazenamento.id, silos_armazenamento.localidade, silos_armazenamento.capacidade, cooperativas_mae.nome_cooperativa 
-        FROM silos_armazenamento 
-        JOIN cooperativas_mae ON silos_armazenamento.id_cooperativa = cooperativas_mae.id
+        SELECT c.id, c.nome_cooperativa, c.registro_ocb, s.id, s.localidade, s.capacidade 
+        FROM cooperativas_mae c 
+        LEFT JOIN silos_armazenamento s ON c.id = s.id_cooperativa
     """)
 
+    resultados = cursor.fetchall()
+
+    if not resultados:
+        print("Nenhum registro encontrado no banco de dados.")
+        return
+
+    cooperativa_atual = None
+    for linha in resultados:
+        id_coope, nome_coope, reg_ocb, id_silo, localidade, capacidade = linha
+
+        if cooperativa_atual != id_coope:
+            cooperativa_atual = id_coope
+            print(f"\n[Cooperativa ID: {id_coope}] Nome: {nome_coope} | OCB: {reg_ocb}")
+            print("   Silos Vinculados:")
+
+        if id_silo is not None:
+            print(f"     • Silo ID: {id_silo} | Localidade: {localidade} | Capacidade: {capacidade}t")
+        else:
+            print("     (Nenhum silo cadastrado para esta cooperativa)")
+
+
+def listar_silos():
+    print("\n" + "=" * 40)
+    print(" RELATÓRIO: APENAS SILOS ")
+    print("=" * 40)
+
+    cursor.execute("""
+        SELECT s.id, s.localidade, s.capacidade, c.nome_cooperativa 
+        FROM silos_armazenamento s
+        JOIN cooperativas_mae c ON s.id_cooperativa = c.id
+    """)
     silos = cursor.fetchall()
 
-    if silos:
-        print("\n--- SILOS ---")
-        for silo in silos:
-            print(f"ID: {silo[0]} | Localidade: {silo[1]} | Capacidade: {silo[2]}t | Coop: {silo[3]}")
-    else:
-        print("\nNenhum silo cadastrado.")
+    if not silos:
+        print("\nNenhum silo cadastrado no sistema.")
+        return
 
-
-def deletar_cooperativa():
-    try:
-        print("\n" + "=" * 40)
-        print(" DELETAR COOPERATIVA MÃE ")
-        print("=" * 40)
-
-        cursor.execute("SELECT id, nome_cooperativa FROM cooperativas_mae")
-        coops = cursor.fetchall()
-        
-        if not coops:
-            print("\n Nenhuma cooperativa cadastrada no sistema.")
-            return
-
-        print("Cooperativas cadastradas:")
-        for coop in coops:
-            print(f"ID: {coop[0]} | Nome: {coop[1]}")
-
-        id_cooperativa = int(input("\nDigite o ID da cooperativa que deseja deletar: "))
-
-        cursor.execute("DELETE FROM silos_armazenamento WHERE id_cooperativa = ?", (id_cooperativa,))
-        cursor.execute("DELETE FROM cooperativas_mae WHERE id = ?", (id_cooperativa,))
-        conexao.commit()
-
-        if cursor.rowcount > 0:
-            print("\n Cooperativa e seus silos vinculados foram deletados com sucesso!")
-        else:
-            print("\n Nenhum registro encontrado com o ID informado.")
-
-    except ValueError:
-        print("\nErro: O ID deve ser um número inteiro válido.")
-    except sqlite3.Error as e:
-        print(f"\nErro ao deletar cooperativa: {e}")
+    print("\n--- SILOS ---")
+    for silo in silos:
+        print(f"ID: {silo[0]} | Localidade: {silo[1]} | Capacidade: {silo[2]}t | Coop: {silo[3]}")
 
 
 def atualizar_cooperativa():
@@ -150,11 +137,11 @@ def atualizar_cooperativa():
         for coop in coops:
             print(f"ID: {coop[0]} | Nome: {coop[1]} | OCB: {coop[2]}")
 
-        id_cooperativa = int(input("\n Digite o ID da cooperativa que deseja atualizar: "))
+        id_cooperativa = int(input("\nDigite o ID da cooperativa que deseja atualizar: "))
 
         cursor.execute("SELECT id FROM cooperativas_mae WHERE id = ?", (id_cooperativa,))
         if not cursor.fetchone():
-            print("\n Nenhum registro encontrado com o ID informado.")
+            print("\nNenhum registro encontrado com o ID informado.")
             return
 
         novo_nome = input("Novo nome da cooperativa: ")
@@ -169,12 +156,134 @@ def atualizar_cooperativa():
             (novo_nome, novo_ocb, id_cooperativa)
         )
         conexao.commit()
-        print("\n Cooperativa atualizada com sucesso!")
+        print("\nCooperativa atualizada com sucesso!")
 
     except ValueError:
-        print("\n Erro: O ID deve ser um número inteiro válido.")
+        print("\nErro: O ID deve ser um número inteiro válido.")
     except sqlite3.Error as e:
-        print(f"\n Erro ao atualizar cooperativa: {e}")
+        print(f"\nErro ao atualizar cooperativa: {e}")
+
+
+def atualizar_silos():
+    try:
+        print("\n" + "=" * 40)
+        print(" ATUALIZAR SILO ")
+        print("=" * 40)
+
+        cursor.execute("""
+            SELECT s.id, s.localidade, s.capacidade, c.nome_cooperativa 
+            FROM silos_armazenamento s
+            JOIN cooperativas_mae c ON s.id_cooperativa = c.id
+        """)
+        silos = cursor.fetchall()
+        
+        if not silos:
+            print("\nNenhum silo cadastrado no sistema.")
+            return
+
+        print("Silos cadastrados:")
+        for silo in silos:
+            print(f"ID: {silo[0]} | Localidade: {silo[1]} | Capacidade: {silo[2]}t | Coop: {silo[3]}")
+
+        id_silo = int(input("\nDigite o ID do silo que deseja atualizar: "))
+
+        cursor.execute("SELECT id FROM silos_armazenamento WHERE id = ?", (id_silo,))
+        if not cursor.fetchone():
+            print("\nNenhum silo encontrado com o ID informado.")
+            return
+
+        nova_localidade = input("Nova localidade do silo: ")
+        nova_capacidade = int(input("Nova capacidade do silo [toneladas]: "))
+        novo_id_coop = int(input("Novo ID da cooperativa mãe vinculada: "))
+
+        cursor.execute(
+            """
+            UPDATE silos_armazenamento 
+            SET localidade = ?, capacidade = ?, id_cooperativa = ? 
+            WHERE id = ?
+            """,
+            (nova_localidade, nova_capacidade, novo_id_coop, id_silo)
+        )
+        conexao.commit()
+        print("\nSilo atualizado com sucesso!")
+
+    except ValueError:
+        print("\nErro: Capacidade e IDs devem ser números inteiros válidos.")
+    except sqlite3.IntegrityError:
+        print("\nErro: O ID da cooperativa mãe informado não existe no sistema.")
+    except sqlite3.Error as e:
+        print(f"\nErro ao atualizar silo: {e}")
+
+
+def deletar_cooperativa():
+    try:
+        print("\n" + "=" * 40)
+        print(" DELETAR COOPERATIVA MÃE ")
+        print("=" * 40)
+
+        cursor.execute("SELECT id, nome_cooperativa FROM cooperativas_mae")
+        coops = cursor.fetchall()
+        
+        if not coops:
+            print("\nNenhuma cooperativa cadastrada no sistema.")
+            return
+
+        print("Cooperativas cadastradas:")
+        for coop in coops:
+            print(f"ID: {coop[0]} | Nome: {coop[1]}")
+
+        id_cooperativa = int(input("\nDigite o ID da cooperativa que deseja deletar: "))
+
+        cursor.execute("DELETE FROM silos_armazenamento WHERE id_cooperativa = ?", (id_cooperativa,))
+        cursor.execute("DELETE FROM cooperativas_mae WHERE id = ?", (id_cooperativa,))
+        conexao.commit()
+
+        if cursor.rowcount > 0:
+            print("\nCooperativa e seus silos vinculados foram deletados com sucesso!")
+        else:
+            print("\nNenhum registro encontrado com o ID informado.")
+
+    except ValueError:
+        print("\nErro: O ID deve ser um número inteiro válido.")
+    except sqlite3.Error as e:
+        print(f"\nErro ao deletar cooperativa: {e}")
+
+
+def deletar_silos():
+    try:
+        print("\n" + "=" * 40)
+        print(" DELETAR SILO ")
+        print("=" * 40)
+
+        cursor.execute("""
+            SELECT s.id, s.localidade, s.capacidade, c.nome_cooperativa 
+            FROM silos_armazenamento s
+            JOIN cooperativas_mae c ON s.id_cooperativa = c.id
+        """)
+        silos = cursor.fetchall()
+        
+        if not silos:
+            print("\nNenhum silo cadastrado no sistema.")
+            return
+
+        print("Silos cadastrados:")
+        for silo in silos:
+            print(f"ID: {silo[0]} | Localidade: {silo[1]} | Capacidade: {silo[2]}t | Coop: {silo[3]}")
+
+        id_silo = int(input("\nDigite o ID do silo que deseja deletar: "))
+
+        cursor.execute("DELETE FROM silos_armazenamento WHERE id = ?", (id_silo,))
+        conexao.commit()
+
+        if cursor.rowcount > 0:
+            print("\nSilo deletado com sucesso!")
+        else:
+            print("\nNenhum silo encontrado com o ID informado.")
+
+    except ValueError:
+        print("\nErro: O ID deve ser um número inteiro válido.")
+    except sqlite3.Error as e:
+        print(f"\nErro ao deletar silo: {e}")
 
 
 def menu():
@@ -186,10 +295,13 @@ def menu():
         print("=" * 40)
         print("1| Cadastrar Cooperativa")
         print("2| Cadastrar Silos")
-        print("3| Listar Dados")
-        print("4| Atualizar Cooperativa")
-        print("5| Deletar Cooperativa")
-        print("6| Sair")
+        print("3| Listar Geral (Cooperativas e Silos)")
+        print("4| Listar Apenas Silos")
+        print("5| Atualizar Cooperativa")
+        print("6| Atualizar Silo")
+        print("7| Deletar Cooperativa")
+        print("8| Deletar Silo")
+        print("9| Sair")
 
         opcao = input("\nEscolha a opção: ")
 
@@ -200,14 +312,20 @@ def menu():
         elif opcao == "3":
             listar_dados()
         elif opcao == "4":
-            atualizar_cooperativa()
+            listar_silos()
         elif opcao == "5":
-            deletar_cooperativa()
+            atualizar_cooperativa()
         elif opcao == "6":
-            print("\n Saindo do menu...")
+            atualizar_silos()
+        elif opcao == "7":
+            deletar_cooperativa()
+        elif opcao == "8":
+            deletar_silos()
+        elif opcao == "9":
+            print("\nSaindo do menu...")
             break
         else:
-            print("\n Opção errada, tente novamente! ")
+            print("\nOpção inválida, tente novamente!")
 
 menu()
 conexao.close()
