@@ -13,6 +13,6 @@ assert situacao_aluno(0) == "Reprovado"
 
 assert situacao_aluno(10) == "Aprovado"
 
-assert situacao_aluno(6.01) == "Aprovado"
+assert situacao_aluno(6.10) == "Aprovado"
 
 print("todos foi aprovados")
