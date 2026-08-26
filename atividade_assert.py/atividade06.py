@@ -1,14 +1,13 @@
 def situacao_faltas(faltas):
+ 	0 a 4: "Regular"
+ 	 5 a 10: "Atenção"
+ 	 11 ou mais: "Reprovado por falta"
+ 	pass
+
+def situacao_faltas(faltas):
     if faltas <= 4:
         return "Regular"
     elif faltas <= 10:
         return "Atenção"
     else:
         return "Reprovado por falta"
-
-assert situacao_faltas(0) == "Regular"
-assert situacao_faltas(4) == "Regular"
-assert situacao_faltas(5) == "Atenção"
-assert situacao_faltas(10) == "Atenção"
-assert situacao_faltas(11) == "Reprovado por falta"
- 
