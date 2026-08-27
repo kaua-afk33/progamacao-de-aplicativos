@@ -286,6 +286,11 @@ def deletar_silos():
         print(f"\nErro ao deletar silo: {e}")
 
 
+
+
+
+
+
 def menu():
     criar_tabelas_cooperativas()
    
