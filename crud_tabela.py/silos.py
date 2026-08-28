@@ -1,14 +1,4 @@
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS silos_armazenamento (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            localidade TEXT NOT NULL,
-            capacidade INTEGER NOT NULL,
-            id_cooperativa INTEGER NOT NULL,
-            FOREIGN KEY (id_cooperativa) REFERENCES cooperativas_mae(id)
-        )
-    ''')
-
-    conexao.commit()
+silos = []
 
 def cadastrar_silos():
     try:

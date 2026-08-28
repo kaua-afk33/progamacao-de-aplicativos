@@ -1,6 +1,4 @@
-conexao = sqlite3.connect("cooperativa_agricola.db")
-cursor = conexao.cursor()
-
+cooperativa = []
 
 def criar_tabelas_cooperativas():
     cursor.execute("PRAGMA foreign_keys = ON")
